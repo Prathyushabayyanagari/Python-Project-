@@ -1,0 +1,115 @@
+import random
+import string
+from datetime import datetime, timedelta
+
+class Order:
+    def __init__(self, customer_name, product, quantity, shipping_address):
+        self.order_id = self.generate_order_id()
+        self.customer_name = customer_name
+        self.product = product
+        self.quantity = quantity
+        self.shipment_status = "Pending"
+        self.shipment_date = (datetime.now() + timedelta(days=3)).strftime("%Y-%m-%d")  # Static shipment date
+        self.tracking_number = self.generate_tracking_number()
+        self.shipping_address = shipping_address
+
+    @staticmethod
+    def generate_order_id():
+        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=8))
+
+    @staticmethod
+    def generate_tracking_number():
+        return ''.join(random.choices(string.ascii_uppercase + string.digits, k=10))
+
+    def __str__(self):
+        return (f"Order ID: {self.order_id}, Customer: {self.customer_name}, Product: {self.product}, "
+                f"Quantity: {self.quantity}, Status: {self.shipment_status}, "
+                f"Shipment Date: {self.shipment_date}, Tracking Number: {self.tracking_number}, "
+                f"Shipping Address: {self.shipping_address}")
+
+class OrderManagement:
+    def __init__(self):
+        self.orders = {}
+
+    def create_order(self):
+        customer_name = input("Enter Customer Name: ")
+        product = input("Enter Product Name: ")
+        quantity = int(input("Enter Quantity: "))
+        shipping_address = input("Enter Shipping Address: ")
+        order = Order(customer_name, product, quantity, shipping_address)
+        self.orders[order.order_id] = order
+        print(f"Order created successfully! Order ID: {order.order_id}")
+
+    def read_order(self):
+        order_id = input("Enter Order ID to view: ")
+        order = self.orders.get(order_id)
+        if order:
+            print(order)
+        else:
+            print("Order not found.")
+
+    def update_order(self):
+        order_id = input("Enter Order ID to update: ")
+        order = self.orders.get(order_id)
+        if order:
+            shipment_status = input("Enter new Shipment Status: ")
+            order.shipment_status = shipment_status
+            print("Order updated successfully!")
+        else:
+            print("Order not found.")
+
+    def delete_order(self):
+        order_id = input("Enter Order ID to delete: ")
+        if self.orders.pop(order_id, None):
+            print("Order deleted successfully!")
+        else:
+            print("Order not found.")
+
+    def order_summary(self):
+        if not self.orders:
+            print("No orders available.")
+            return
+        for order in self.orders.values():
+            print(order)
+
+    def view_tracking_details(self):
+        order_id = input("Enter Order ID to view tracking details: ")
+        order = self.orders.get(order_id)
+        if order:
+            print(f"Tracking Number: {order.tracking_number}, Shipment Date: {order.shipment_date}")
+        else:
+            print("Order not found.")
+
+def main():
+    management = OrderManagement()
+    while True:
+        print("\nE-commerce Order Management")
+        print("1. Create Order")
+        print("2. Read Order")
+        print("3. Update Order")
+        print("4. Delete Order")
+        print("5. Order Summary")
+        print("6. View Tracking Details")
+        print("7. Exit")
+
+        choice = input("Select an option: ")
+        if choice == '1':
+            management.create_order()
+        elif choice == '2':
+            management.read_order()
+        elif choice == '3':
+            management.update_order()
+        elif choice == '4':
+            management.delete_order()
+        elif choice == '5':
+            management.order_summary()
+        elif choice == '6':
+            management.view_tracking_details()
+        elif choice == '7':
+            print("Exiting the program.")
+            break
+        else:
+            print("Invalid choice, please try again.")
+
+if __name__ == "__main__":
+    main()
